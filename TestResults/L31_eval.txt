@@ -1,0 +1,48 @@
+0) Action coverage: share of steps where the action changes, |a - q| quantiles 50/90/99% (rad)
+   rollout.csv train            changes   0.2%   |a-q| 0.009 / 0.469 / 2.344
+   rollout_smooth.csv train     changes  79.0%   |a-q| 0.381 / 1.524 / 2.801
+   test seed123                 changes  71.7%   |a-q| 0.286 / 1.144 / 2.103
+   test seed2027                changes  72.2%   |a-q| 0.318 / 1.203 / 2.306
+
+A) Step-target validation (rollout.csv rows [56000, 70000))
+   one-step      q RMSE  qd RMSE
+   persist     4.97e-03   0.1460
+   old L3      4.65e-04   0.1314
+   new L3.1    3.79e-04   0.1364
+   multi-step (552 windows): q RMSE @10/50/100/200 | qd RMSE @10/50/100/200 | teacher open_loop_rmse @10/50/100
+   old L3     0.0066 0.0528 0.0918 0.1340 | 0.452 0.807 0.853 0.869 | 0.0163 0.1291 0.2245
+   new L3.1   0.0070 0.0742 0.1490 0.2270 | 0.550 1.117 1.138 1.103 | 0.0172 0.1799 0.3632
+
+B) Smoothed-action sets (never trained on). q / qd RMSE, direction ok, displacement ratio (pred/true, <1 = lag)
+   smooth val (Unity) windows (392 x 200 steps)
+     old L3    @50: q 0.244 qd 3.72 dir 93% ratio 0.89   @100: q 0.438 qd 4.11 dir 93% ratio 0.93   @200: q 0.561 qd 4.51 dir 93% ratio 0.99
+     new L3.1  @50: q 0.225 qd 3.47 dir 92% ratio 0.92   @100: q 0.393 qd 3.87 dir 91% ratio 0.93   @200: q 0.453 qd 4.37 dir 92% ratio 0.99
+   test seed123 A raw=goal (4 x 200 steps)
+     old L3    @50: q 0.248 qd 0.96 dir 100% ratio 0.50   @100: q 0.188 qd 1.15 dir 100% ratio 0.78   @200: q 0.086 qd 0.47 dir 100% ratio 0.95
+     new L3.1  @50: q 0.262 qd 1.35 dir 100% ratio 0.47   @100: q 0.181 qd 1.97 dir 100% ratio 0.84   @200: q 0.127 qd 0.67 dir 100% ratio 1.03
+   test seed123 B random policy (4 x 200 steps)
+     old L3    @50: q 0.225 qd 3.08 dir 100% ratio 0.50   @100: q 0.298 qd 3.05 dir 96% ratio 0.77   @200: q 0.382 qd 4.29 dir 96% ratio 0.94
+     new L3.1  @50: q 0.245 qd 3.32 dir 100% ratio 0.45   @100: q 0.395 qd 3.33 dir 91% ratio 0.69   @200: q 0.544 qd 3.29 dir 96% ratio 0.89
+   test seed2027 A raw=goal (8 x 200 steps)
+     old L3    @50: q 0.215 qd 1.54 dir 100% ratio 0.54   @100: q 0.192 qd 0.98 dir 100% ratio 0.80   @200: q 0.122 qd 0.45 dir 100% ratio 0.95
+     new L3.1  @50: q 0.250 qd 1.81 dir 100% ratio 0.46   @100: q 0.202 qd 1.70 dir 100% ratio 0.81   @200: q 0.142 qd 0.78 dir 100% ratio 0.97
+   test seed2027 B random policy (8 x 200 steps)
+     old L3    @50: q 0.320 qd 3.47 dir 96% ratio 0.52   @100: q 0.391 qd 5.11 dir 98% ratio 0.81   @200: q 0.563 qd 4.79 dir 96% ratio 0.96
+     new L3.1  @50: q 0.349 qd 4.04 dir 100% ratio 0.45   @100: q 0.360 qd 5.24 dir 100% ratio 0.79   @200: q 0.380 qd 4.67 dir 94% ratio 1.01
+   final distance to goal at step 200 (rad, RMSE over joints): mean |pred - true|, mean (pred - true)
+   test seed123 old L3    A: 0.063 / +0.063   B: 0.162 / -0.061   (true dist A 0.064, B 0.771)
+   test seed123 new L3.1  A: 0.064 / +0.061   B: 0.145 / +0.063   (true dist A 0.064, B 0.771)
+   test seed2027 old L3    A: 0.061 / +0.060   B: 0.203 / +0.077   (true dist A 0.120, B 0.736)
+   test seed2027 new L3.1  A: 0.078 / +0.065   B: 0.194 / -0.032   (true dist A 0.120, B 0.736)
+   one-step on smooth val: old L3 q 1.74e-03 qd 0.3248, new L3.1 q 8.38e-04 qd 0.2662, persistence qd 0.2822
+
+C) Action sensitivity: one-step qd RMSE with correct vs shuffled actions; multi-step from goal switches
+   step val   old L3: correct 0.1314 shuffled 0.4311   new L3.1: correct 0.1364 shuffled 0.2971
+   smooth val old L3: correct 0.3248 shuffled 0.9962   new L3.1: correct 0.2662 shuffled 0.4859
+   28 switches, old L3    correct q@50 0.167 dir 96% | old action held q@50 0.519 dir 41% | other window q@50 0.497 dir 69%
+   28 switches, new L3.1  correct q@50 0.170 dir 96% | old action held q@50 0.503 dir 65% | other window q@50 0.469 dir 71%
+
+D) New model export (dynamics_smooth.onnx + norm_smooth.json)
+   input x [1, 18], output delta [1, 12], opset 15, ops ['Gemm', 'Mul', 'Sigmoid'] (no normalization in the graph)
+   norm_smooth.json vs norm_smooth.npz max |diff| x_mean 4.7e-09, x_std 0.0e+00, y_mean 3.7e-09, y_std 4.7e-09
+   one-step max |onnx - torch| (normalized delta) = 2.6e-06; 200-step Unity-path vs Python recursion max |diff| = 3.7e-05

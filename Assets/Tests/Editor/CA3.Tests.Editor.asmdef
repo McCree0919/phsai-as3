@@ -1,0 +1,6 @@
+{
+    "name": "CA3.Tests.Editor",
+    "references": ["CA3", "Mujoco.Runtime", "Unity.InferenceEngine"],
+    "includePlatforms": ["Editor"],
+    "allowUnsafeCode": true
+}

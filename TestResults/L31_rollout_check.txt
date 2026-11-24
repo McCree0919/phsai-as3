@@ -1,0 +1,15 @@
+file=C:\dev\phsai-as3\Assets\CA3\Data\rollout_smooth.csv
+PASS  shape: (50000, 30) = state 12 + action 6 + next_state 12
+PASS  finite: no NaN/Inf
+PASS  consecutive rows: max|next_state[t] - state[t+1]| = 0
+PASS  one 0.002 s physics step per row: max|q' - q - dt*qd'| = 4.58e-07 (float32 rounding)
+FAIL  action_t drives state_t -> state_t+1: 39676 goal switches, residual RMS of dqd: a_t (recorded)=0.2941, a_{t-1}=0.3043, a_{t+1}=0.2864
+PASS  not mostly static: 100% of rows have max|qd| > 0.01 rad/s
+distinct actions=39677, action changes on 79.4% of steps, |a - q| median / 90% / 99% = 0.386 / 1.523 / 2.809 rad
+  joint1: q in [-6.185, +5.924]  action in [-6.283, +6.283]  max|qd|=37.25 rad/s
+  joint2: q in [-2.485, +2.432]  action in [-2.618, +2.618]  max|qd|=21.58 rad/s
+  joint3: q in [-0.000, +4.318]  action in [-0.061, +5.236]  max|qd|=22.14 rad/s
+  joint4: q in [-5.234, +5.077]  action in [-6.283, +6.283]  max|qd|=23.88 rad/s
+  joint5: q in [-1.721, +1.791]  action in [-2.164, +2.164]  max|qd|=19.82 rad/s
+  joint6: q in [-4.024, +4.709]  action in [-6.000, +6.283]  max|qd|=19.41 rad/s
+RESULT: FAIL

@@ -1,0 +1,70 @@
+1) Unity consistency (1500 Unity steps, goals: home then random every 1 s)
+   ctrl[t+2] == smooth_action(ctrl[t+1], policy(state_t, goal_t)) for all t: max |diff| = 2.4e-07
+   ctrl[t] == Python action of frame t-1: max |diff| = 5.00e-02
+   ctrl[t] == Python action of frame t-2: max |diff| = 9.76e-05
+   ctrl[t] == Python action of frame t-3: max |diff| = 5.00e-02
+   Python MuJoCo closed loop (Unity timing) vs Unity: max |q diff| over 1500 steps = 8.52e-02 rad
+
+2a) Smoke test: 5 goals (seed 7), rest start, 2 s
+   controller                err@0.4s   err@2s max jnt@2s  overshoot  osc p2p  |qd|end  (mean; median err@2s)
+   learned (Unity timing)       0.653    0.167      0.268      0.218    0.066     1.93  ; 0.151
+   learned (no delay)           0.642    0.163      0.266      0.209    0.062     0.11  ; 0.147
+   theta=0 smoothed goal        0.246    0.056      0.136      0.004    0.000     0.08  ; 0.017
+   direct goal (ctrl=goal)      0.245    0.055      0.135      0.004    0.000     0.08  ; 0.017
+
+2b) Test: 20 goals (seed 2026), rest start, 2 s. Errors = RMSE over joints of q - goal (rad); overshoot = max rad past the goal; osc p2p = max joint peak-to-peak in the last 0.5 s
+   # 0 q0   [-1.41 +0.26 +1.51 -0.57 +1.35 +1.28]  goal [+1.78 -0.59 +1.85 -0.89 +2.16 +1.85]
+       q@2s [+1.90 -0.76 +1.64 -0.99 +1.77 +1.78]  err@0.4s 0.645 err@2s 0.209 (max joint 0.399) overshoot 0.171 osc p2p 0.109 |qd|end 1.52 contacts 1 | direct err@2s 0.181 | WM end vs real@0.4s 0.019 (WM dist 0.648 vs real 0.645)
+   # 1 q0   [+0.60 +0.47 +1.60 +1.43 +1.49 -0.71]  goal [-0.98 -0.50 +1.62 -0.30 +1.82 -2.14]
+       q@2s [-0.82 -0.72 +1.46 -0.46 +1.71 -2.17]  err@0.4s 0.427 err@2s 0.150 (max joint 0.214) overshoot 0.224 osc p2p 0.048 |qd|end 2.13 contacts 2 | direct err@2s 0.049 | WM end vs real@0.4s 0.022 (WM dist 0.437 vs real 0.427)
+   # 2 q0   [-0.23 -0.25 +1.00 +0.42 +1.47 -0.88]  goal [-1.28 +0.69 +2.12 +0.47 +1.34 +1.97]
+       q@2s [-1.11 +0.48 +2.02 +0.30 +1.33 +1.95]  err@0.4s 0.506 err@2s 0.138 (max joint 0.210) overshoot 0.047 osc p2p 0.045 |qd|end 2.28 contacts 0 | direct err@2s 0.004 | WM end vs real@0.4s 0.054 (WM dist 0.523 vs real 0.506)
+   # 3 q0   [+0.28 -0.12 +2.31 -0.79 +1.76 -0.82]  goal [-1.05 +0.37 +1.07 -0.03 +1.69 -1.37]
+       q@2s [-0.86 +0.14 +0.95 -0.22 +1.67 -1.38]  err@0.4s 0.413 err@2s 0.150 (max joint 0.227) overshoot 0.113 osc p2p 0.046 |qd|end 1.98 contacts 2 | direct err@2s 0.003 | WM end vs real@0.4s 0.045 (WM dist 0.425 vs real 0.413)
+   # 4 q0   [+1.02 +0.09 +1.79 -0.56 +1.45 -0.02]  goal [-0.13 +0.32 +1.71 -0.37 +0.82 +1.29]
+       q@2s [+0.04 +0.09 +1.60 -0.55 +0.84 +1.27]  err@0.4s 0.306 err@2s 0.146 (max joint 0.229) overshoot 0.120 osc p2p 0.043 |qd|end 2.18 contacts 0 | direct err@2s 0.002 | WM end vs real@0.4s 0.026 (WM dist 0.315 vs real 0.306)
+   # 5 q0   [+0.09 -0.32 +1.57 -1.79 +1.76 +2.15]  goal [-1.94 -0.26 +2.00 -0.82 +1.67 -0.37]
+       q@2s [-1.77 -0.48 +1.89 -1.01 +1.64 -0.35]  err@0.4s 0.614 err@2s 0.147 (max joint 0.219) overshoot 0.077 osc p2p 0.051 |qd|end 2.39 contacts 2 | direct err@2s 0.003 | WM end vs real@0.4s 0.075 (WM dist 0.664 vs real 0.614)
+   # 6 q0   [+1.21 +0.85 +2.29 +0.53 +1.06 +1.97]  goal [-2.10 -0.37 +1.17 +0.76 +1.55 -1.79]
+       q@2s [-1.93 -0.59 +1.05 +0.57 +1.54 -1.82]  err@0.4s 0.807 err@2s 0.144 (max joint 0.216) overshoot 0.235 osc p2p 0.052 |qd|end 2.02 contacts 0 | direct err@2s 0.001 | WM end vs real@0.4s 0.033 (WM dist 0.836 vs real 0.807)
+   # 7 q0   [-2.14 +0.19 +1.55 +0.45 +1.66 +1.72]  goal [+1.84 -0.57 +2.39 +1.27 +1.78 +0.70]
+       q@2s [+1.91 -0.74 +2.29 +1.13 +1.67 +0.68]  err@0.4s 0.742 err@2s 0.114 (max joint 0.171) overshoot 0.173 osc p2p 0.111 |qd|end 2.68 contacts 2 | direct err@2s 0.031 | WM end vs real@0.4s 0.046 (WM dist 0.763 vs real 0.742)
+   # 8 q0   [+0.20 +0.77 +1.07 +0.44 +1.70 -1.61]  goal [+0.51 -0.18 +2.06 -1.90 +1.73 +1.57]
+       q@2s [+0.63 -0.34 +1.99 -2.05 +1.64 +1.55]  err@0.4s 0.615 err@2s 0.114 (max joint 0.165) overshoot 0.175 osc p2p 0.083 |qd|end 2.51 contacts 2 | direct err@2s 0.012 | WM end vs real@0.4s 0.035 (WM dist 0.627 vs real 0.615)
+   # 9 q0   [+0.56 -0.33 +1.86 -0.71 +1.70 -1.63]  goal [-0.97 -0.86 +0.80 +0.24 +1.16 +0.07]
+       q@2s [-0.80 -1.09 +0.68 +0.06 +1.18 +0.05]  err@0.4s 0.404 err@2s 0.146 (max joint 0.235) overshoot 0.255 osc p2p 0.055 |qd|end 1.89 contacts 0 | direct err@2s 0.003 | WM end vs real@0.4s 0.056 (WM dist 0.426 vs real 0.404)
+   #10 q0   [+0.70 +0.70 +1.30 -0.80 +1.29 -1.68]  goal [+0.72 +0.59 +1.52 +0.26 +2.16 +0.87]
+       q@2s [+0.91 +0.40 +1.28 +0.13 +1.70 +0.79]  err@0.4s 0.471 err@2s 0.247 (max joint 0.461) overshoot 0.189 osc p2p 0.042 |qd|end 1.45 contacts 2 | direct err@2s 0.167 | WM end vs real@0.4s 0.041 (WM dist 0.494 vs real 0.471)
+   #11 q0   [+1.08 +0.72 +1.04 +0.66 +1.70 +1.51]  goal [-0.69 +0.35 +1.76 -0.40 +0.97 -0.65]
+       q@2s [-0.51 +0.12 +1.61 -0.57 +0.95 -0.67]  err@0.4s 0.538 err@2s 0.148 (max joint 0.225) overshoot 0.254 osc p2p 0.075 |qd|end 2.66 contacts 0 | direct err@2s 0.003 | WM end vs real@0.4s 0.045 (WM dist 0.553 vs real 0.538)
+   #12 q0   [+2.04 -0.52 +0.85 -0.58 +0.97 -1.02]  goal [+1.82 -0.33 +1.73 -1.15 +1.82 -1.64]
+       q@2s [+1.98 -0.55 +1.58 -1.30 +1.70 -1.67]  err@0.4s 0.296 err@2s 0.151 (max joint 0.218) overshoot 0.155 osc p2p 0.049 |qd|end 1.57 contacts 2 | direct err@2s 0.049 | WM end vs real@0.4s 0.047 (WM dist 0.279 vs real 0.296)
+   #13 q0   [+1.27 -0.14 +0.98 +1.14 +1.65 -0.27]  goal [-1.14 +0.52 +1.32 -2.01 +2.16 -2.07]
+       q@2s [-0.89 +0.29 +1.06 -2.14 +1.70 -2.11]  err@0.4s 0.746 err@2s 0.263 (max joint 0.464) overshoot 0.137 osc p2p 0.070 |qd|end 1.45 contacts 2 | direct err@2s 0.189 | WM end vs real@0.4s 0.092 (WM dist 0.822 vs real 0.746)
+   #14 q0   [-1.67 -0.06 +1.03 -0.73 +1.66 +2.01]  goal [+1.92 -0.78 +2.23 -1.46 +2.04 -0.90]
+       q@2s [+2.03 -0.97 +2.02 -1.57 +1.70 -0.93]  err@0.4s 0.800 err@2s 0.192 (max joint 0.342) overshoot 0.185 osc p2p 0.111 |qd|end 1.23 contacts 2 | direct err@2s 0.140 | WM end vs real@0.4s 0.096 (WM dist 0.846 vs real 0.800)
+   #15 q0   [+0.96 +0.40 +2.22 +2.11 +1.23 +0.56]  goal [+1.05 -0.77 +1.87 -0.79 +1.06 +0.22]
+       q@2s [+1.17 -0.98 +1.77 -0.94 +1.03 +0.20]  err@0.4s 0.421 err@2s 0.124 (max joint 0.209) overshoot 0.357 osc p2p 0.079 |qd|end 2.65 contacts 0 | direct err@2s 0.002 | WM end vs real@0.4s 0.034 (WM dist 0.430 vs real 0.421)
+   #16 q0   [-0.17 +0.14 +1.83 -0.01 +1.75 -1.42]  goal [-0.93 -0.26 +2.08 +0.67 +1.13 +1.08]
+       q@2s [-0.78 -0.47 +1.98 +0.50 +1.11 +1.05]  err@0.4s 0.355 err@2s 0.131 (max joint 0.211) overshoot 0.225 osc p2p 0.055 |qd|end 2.47 contacts 0 | direct err@2s 0.002 | WM end vs real@0.4s 0.047 (WM dist 0.398 vs real 0.355)
+   #17 q0   [+1.19 +0.50 +0.79 -1.27 +1.77 +1.67]  goal [-1.29 +0.09 +1.13 -0.37 +0.84 -0.96]
+       q@2s [-1.12 -0.14 +1.00 -0.55 +0.83 -0.95]  err@0.4s 0.688 err@2s 0.152 (max joint 0.233) overshoot 0.300 osc p2p 0.082 |qd|end 1.93 contacts 0 | direct err@2s 0.004 | WM end vs real@0.4s 0.047 (WM dist 0.708 vs real 0.688)
+   #18 q0   [-1.01 +0.77 +1.73 -1.42 +1.46 -0.03]  goal [+0.60 +0.06 +1.42 -0.83 +1.68 +2.09]
+       q@2s [+0.72 -0.13 +1.30 -0.98 +1.64 +2.07]  err@0.4s 0.452 err@2s 0.123 (max joint 0.190) overshoot 0.199 osc p2p 0.072 |qd|end 1.87 contacts 2 | direct err@2s 0.004 | WM end vs real@0.4s 0.040 (WM dist 0.469 vs real 0.452)
+   #19 q0   [+0.23 +0.71 +0.67 -1.31 +1.70 +0.31]  goal [-0.05 -0.24 +1.19 +0.79 +1.37 -0.28]
+       q@2s [+0.09 -0.45 +1.04 +0.63 +1.31 -0.31]  err@0.4s 0.426 err@2s 0.138 (max joint 0.207) overshoot 0.218 osc p2p 0.106 |qd|end 2.07 contacts 0 | direct err@2s 0.002 | WM end vs real@0.4s 0.029 (WM dist 0.408 vs real 0.426)
+
+   controller                err@0.4s   err@2s max jnt@2s  overshoot  osc p2p  |qd|end  (mean; median err@2s)
+   learned (Unity timing)       0.534    0.156      0.252      0.190    0.069     2.05  ; 0.146
+   learned (no delay)           0.519    0.152      0.246      0.176    0.050     0.09  ; 0.140
+   theta=0 smoothed goal        0.192    0.042      0.103      0.004    0.002     0.06  ; 0.004
+   direct goal (ctrl=goal)      0.192    0.042      0.104      0.004    0.001     0.09  ; 0.004
+   World model vs real at step 200 (learned, Unity timing): end q RMSE mean 0.046 max 0.096; predicted dist-to-goal 0.554 vs real 0.534; WM says <0.1 but real >0.2: 0/20
+   Teacher reward terms over the first 200 steps (per-step means; fitness = -return = total):
+                             |q-goal|^2  0.05|qd|^2  0.1|da|^2    total
+   learned WM                    5.9896      1.6711    0.00017   7.6608
+   learned real                  5.5826      1.9243    0.00100   7.5078
+   learned real no delay         5.4401      1.7905    0.00015   7.2307
+   theta0 WM                     4.1233      4.5827    0.00014   8.7060
+   theta0 real                   3.7530      4.6290    0.00014   8.3821
+   goals the direct baseline does not reach within 0.05 rad in 2 s: [0, 10, 13, 14]

@@ -1,0 +1,8 @@
+L41_unity_controller.csv (1500 steps) with controller_l41.json
+  delay 1: max |applied - Unity ctrl| = 5.08e-02, steps with error > 1e-3: 1500/1500
+  delay 2 (CTRL_DELAY): max |applied - Unity ctrl| = 1.64e-03, steps with error > 1e-3: 8/1500
+  delay 3: max |applied - Unity ctrl| = 5.10e-02, steps with error > 1e-3: 1499/1500
+L4_unity_controller.csv (1500 steps) with controller.json
+  delay 1: max |applied - Unity ctrl| = 5.00e-02, steps with error > 1e-3: 1500/1500
+  delay 2 (CTRL_DELAY): max |applied - Unity ctrl| = 1.22e-04, steps with error > 1e-3: 0/1500
+  delay 3: max |applied - Unity ctrl| = 5.00e-02, steps with error > 1e-3: 1499/1500

@@ -1,0 +1,57 @@
+L5 full loop in Unity (TrackingTarget -> IK -> WorldModelController -> MuJoCo), 2 s per target
+per target: EE distance at the end (mm) / time until the EE is within 5 mm (s) / max overshoot past the final EE position along the move (mm) / last 0.5 s: EE peak-to-peak (mm), max joint p2p (rad), max |qd| (rad/s)
+  L4.2
+    #0 near home   dist    1.15  t<5mm 0.43  overshoot  1.00  p2p EE 0.002 q 0.0000  |qd| 0.000  IK err 0.19  joint err RMSE 0.0012
+    #1 left        dist    1.97  t<5mm 0.43  overshoot  0.00  p2p EE 0.000 q 0.0000  |qd| 0.000  IK err 0.27  joint err RMSE 0.0018
+    #2 right       dist    1.91  t<5mm 0.56  overshoot  0.00  p2p EE 0.000 q 0.0000  |qd| 0.000  IK err 0.24  joint err RMSE 0.0017
+    #3 high        dist    0.55  t<5mm 0.44  overshoot  0.00  p2p EE 0.000 q 0.0000  |qd| 0.000  IK err 0.28  joint err RMSE 0.0005
+    #4 low         dist    1.10  t<5mm 0.42  overshoot  0.06  p2p EE 0.000 q 0.0000  |qd| 0.000  IK err 0.12  joint err RMSE 0.0018
+    #5 far         dist    2.49  t<5mm 0.46  overshoot  0.00  p2p EE 0.001 q 0.0000  |qd| 0.000  IK err 0.18  joint err RMSE 0.0020
+    #6 unreachable dist  477.10  t<5mm   -    overshoot  0.57  p2p EE 0.002 q 0.0000  |qd| 0.000  IK err 476.90  joint err RMSE 0.0025
+  theta=0
+    #0 near home   dist    1.35  t<5mm 0.48  overshoot  0.00  p2p EE 0.000 q 0.0000  |qd| 0.000  IK err 0.19  joint err RMSE 0.0014
+    #1 left        dist    2.25  t<5mm 0.43  overshoot  0.00  p2p EE 0.000 q 0.0000  |qd| 0.000  IK err 0.27  joint err RMSE 0.0020
+    #2 right       dist    2.20  t<5mm 0.56  overshoot  0.00  p2p EE 0.000 q 0.0000  |qd| 0.000  IK err 0.24  joint err RMSE 0.0020
+    #3 high        dist    0.58  t<5mm 0.49  overshoot  0.00  p2p EE 0.000 q 0.0000  |qd| 0.000  IK err 0.28  joint err RMSE 0.0005
+    #4 low         dist    1.25  t<5mm 0.50  overshoot  0.00  p2p EE 0.000 q 0.0000  |qd| 0.000  IK err 0.12  joint err RMSE 0.0020
+    #5 far         dist    2.83  t<5mm 0.55  overshoot  0.00  p2p EE 0.000 q 0.0000  |qd| 0.000  IK err 0.18  joint err RMSE 0.0023
+    #6 unreachable dist  477.13  t<5mm   -    overshoot  0.00  p2p EE 0.000 q 0.0000  |qd| 0.000  IK err 476.90  joint err RMSE 0.0028
+  L4.2, driver off
+    #0 near home   dist    1.15  t<5mm 0.43  overshoot  1.01  p2p EE 0.002 q 0.0000  |qd| 0.000  IK err 0.19  joint err RMSE 0.0012
+    #1 left        dist    1.97  t<5mm 0.43  overshoot  0.00  p2p EE 0.000 q 0.0000  |qd| 0.000  IK err 0.27  joint err RMSE 0.0018
+    #2 right       dist    1.91  t<5mm 0.56  overshoot  0.00  p2p EE 0.000 q 0.0000  |qd| 0.000  IK err 0.24  joint err RMSE 0.0017
+    #3 high        dist    0.55  t<5mm 0.44  overshoot  0.00  p2p EE 0.000 q 0.0000  |qd| 0.000  IK err 0.28  joint err RMSE 0.0005
+    #4 low         dist    1.10  t<5mm 0.42  overshoot  0.06  p2p EE 0.000 q 0.0000  |qd| 0.000  IK err 0.12  joint err RMSE 0.0018
+    #5 far         dist    2.49  t<5mm 0.46  overshoot  0.00  p2p EE 0.001 q 0.0000  |qd| 0.000  IK err 0.18  joint err RMSE 0.0020
+    #6 unreachable dist  477.10  t<5mm   -    overshoot  0.57  p2p EE 0.002 q 0.0000  |qd| 0.000  IK err 476.90  joint err RMSE 0.0025
+
+WorldModelDriver on vs off (same scene, L4.2): max |q difference| over all 7000 steps = 0.00e+00 rad, max |ctrl difference| = 0.00e+00
+
+Self-contact check (MuJoCo contacts at the pose):
+  IK test solution home       : none
+  IK test solution near home  : none
+  IK test solution left       : none
+  IK test solution right      : none
+  IK test solution high       : none
+  IK test solution low        : none
+  IK test solution far        : none
+  IK test solution back       : none
+  IK test solution unreachable: none
+  L4.2     loop #0 near home  : steps with contacts (every 50th checked) 0/20 
+  L4.2     loop #1 left       : steps with contacts (every 50th checked) 0/20 
+  L4.2     loop #2 right      : steps with contacts (every 50th checked) 0/20 
+  L4.2     loop #3 high       : steps with contacts (every 50th checked) 0/20 
+  L4.2     loop #4 low        : steps with contacts (every 50th checked) 0/20 
+  L4.2     loop #5 far        : steps with contacts (every 50th checked) 0/20 
+  L4.2     loop #6 unreachable: steps with contacts (every 50th checked) 0/20 
+  theta=0  loop #0 near home  : steps with contacts (every 50th checked) 0/20 
+  theta=0  loop #1 left       : steps with contacts (every 50th checked) 0/20 
+  theta=0  loop #2 right      : steps with contacts (every 50th checked) 0/20 
+  theta=0  loop #3 high       : steps with contacts (every 50th checked) 0/20 
+  theta=0  loop #4 low        : steps with contacts (every 50th checked) 0/20 
+  theta=0  loop #5 far        : steps with contacts (every 50th checked) 0/20 
+  theta=0  loop #6 unreachable: steps with contacts (every 50th checked) 0/20 
+
+World model in Unity (dynamics_multistep.onnx + norm_multistep.json, Inference Engine CPU), 140 samples:
+  max |Unity - Python| next state: q 1.07e-06 rad, qd 4.77e-06 rad/s; max |Unity - Python| delta (next - state) relative 1.11e-05
+  Predict time in Unity: median 0.097 ms, max 0.181 ms

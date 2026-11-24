@@ -1,0 +1,3 @@
+L2 rollout collection: requested steps=70000, sim time=140.002s, wall time since startup=148.5s
+file=Assets/CA3/Data/rollout.csv (25227 KB)
+goal switch -> data->ctrl delay (physics steps: count) 2: 139

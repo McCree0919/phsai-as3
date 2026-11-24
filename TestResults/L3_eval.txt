@@ -1,0 +1,26 @@
+validation rows [56000, 70000) = 14000 steps = 28.0 s (contiguous, unseen in training)
+
+A/B. One-step prediction (RMSE / MAE over all joints; q in rad, qd in rad/s; overall = RMSE of state/std)
+predictor                                          q RMSE      q MAE   qd RMSE    qd MAE   overall
+world model                                      4.65e-04   2.27e-04    0.1314    0.0534  4.08e-02
+persistence (s' = s)                             4.97e-03   1.99e-03    0.1460    0.0555  4.60e-02
+constant velocity (q' = q + dt*qd, qd' = qd)     2.92e-04   1.11e-04    0.1460    0.0555  4.58e-02
+per joint qd RMSE  model: 0.095 0.041 0.055 0.191 0.096 0.211 | persistence: 0.130 0.052 0.072 0.209 0.107 0.219
+R^2 of predicted dqd per joint: 0.47 0.36 0.42 0.17 0.20 0.07
+teacher metric joint_rmse (one-step, q vector norm): 0.001140 rad
+
+C. Multi-step open-loop prediction: 552 windows of 200 steps, recorded actions, own predictions fed back
+   k (steps / s)  q RMSE model  q persist  qd RMSE model  qd persist  q RMSE no-switch  q RMSE switch  worst q RMSE
+    1 / 0.002s        0.0003     0.0027          0.093       0.097            0.0004         0.0002        0.0021
+   10 / 0.020s        0.0040     0.0271          0.263       0.366            0.0052         0.0021        0.0338
+   25 / 0.050s        0.0145     0.0677          0.425       0.848            0.0175         0.0100        0.1320
+   50 / 0.100s        0.0337     0.1343          0.481       1.386            0.0350         0.0318        0.2512
+  100 / 0.200s        0.0634     0.2652          0.509       2.036            0.0541         0.0775        0.4073
+  200 / 0.400s        0.0981     0.5187          0.531       2.468            0.0650         0.1480        0.4710
+teacher open_loop_rmse@10: 0.016335 rad
+teacher open_loop_rmse@50: 0.129074 rad
+teacher open_loop_rmse@100: 0.224450 rad
+windows containing a goal switch: 220/552
+examples: start at goal switch=row 56113, no goal switch in window=row 56125, worst window=row 60575
+
+ONNX: input x [1, 18], output delta [1, 12], opset 15, max |onnx - torch| = 1.67e-06

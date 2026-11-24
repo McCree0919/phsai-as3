@@ -1,0 +1,15 @@
+file=C:\dev\phsai-as3\Assets\CA3\Data\rollout.csv
+PASS  shape: (70000, 30) = state 12 + action 6 + next_state 12
+PASS  finite: no NaN/Inf
+PASS  consecutive rows: max|next_state[t] - state[t+1]| = 0
+PASS  one 0.002 s physics step per row: max|q' - q - dt*qd'| = 2.35e-07 (float32 rounding)
+PASS  action_t drives state_t -> state_t+1: 140 goal switches, residual RMS of dqd: a_t (recorded)=0.2546, a_{t-1}=0.3477, a_{t+1}=0.3517
+PASS  not mostly static: 92% of rows have max|qd| > 0.01 rad/s
+distinct actions=141
+  joint1: q in [-2.171, +2.077]  action in [-2.171, +2.077]  max|qd|=25.63 rad/s
+  joint2: q in [-0.888, +1.034]  action in [-0.886, +0.898]  max|qd|=10.20 rad/s
+  joint3: q in [-0.000, +2.480]  action in [+0.000, +2.481]  max|qd|=12.98 rad/s
+  joint4: q in [-2.178, +2.105]  action in [-2.179, +2.105]  max|qd|=22.51 rad/s
+  joint5: q in [-0.000, +1.783]  action in [+0.000, +2.164]  max|qd|=12.59 rad/s
+  joint6: q in [-2.152, +2.126]  action in [-2.151, +2.131]  max|qd|=17.31 rad/s
+RESULT: PASS
